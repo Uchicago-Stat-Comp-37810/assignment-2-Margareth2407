@@ -1,4 +1,4 @@
-trueA <- 5
+trueA <- 5 #set a,b,sd and sample size for generating data
 trueB <- 0
 trueSd <- 10
 sampleSize <- 31
@@ -8,9 +8,10 @@ x <- (-(sampleSize-1)/2):((sampleSize-1)/2)
 # create dependent values according to ax + b + N(0,sd)
 y <-  trueA * x + trueB + rnorm(n=sampleSize,mean=0,sd=trueSd)
 
-plot(x,y, main="Test Data")
+plot(x,y, main="Test Data") #plot generated data
 
-likelihood <- function(param){
+#deriving a likelihood function
+likelihood <- function(param){ 
   a = param[1]
   b = param[2]
   sd = param[3]
@@ -21,13 +22,13 @@ likelihood <- function(param){
   return(sumll)   
 }
 
-# Example: plot the likelihood profile of the slope a
+# Plotting the likelihood profile of the slope a
 slopevalues <- function(x){return(likelihood(c(x, trueB, trueSd)))}
 slopelikelihoods <- lapply(seq(3, 7, by=.05), slopevalues )
 plot (seq(3, 7, by=.05), slopelikelihoods , type="l", xlab = "values of slope parameter a", ylab = "Log likelihood")
 
 
-# Prior distribution
+# Setting prior distribution for each parameter
 prior <- function(param){
   a = param[1]
   b = param[2]
@@ -38,13 +39,15 @@ prior <- function(param){
   return(aprior+bprior+sdprior)
 }
 
+#Calculating posterior function
 posterior <- function(param){
   return (likelihood(param) + prior(param))
 }
 
 ######## Metropolis algorithm ################
 
-proposalfunction <- function(param){
+#Defining proposal density function that will be used in step 2 of algorithm
+proposalfunction <- function(param){ 
   return(rnorm(3,mean = param, sd= c(0.1,0.5,0.3)))
 }
 
@@ -66,7 +69,6 @@ run_metropolis_MCMC <- function(startvalue, iterations){
 
 startvalue = c(4,0,10)
 chain = run_metropolis_MCMC(startvalue, 10000)
-
 
 
 burnIn = 5000
