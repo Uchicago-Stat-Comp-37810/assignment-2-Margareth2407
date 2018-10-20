@@ -1,0 +1,46 @@
+---
+title: "Report of accuracy"
+author: "Margarita Orlova"
+date: "October 20, 2018"
+output: html_document
+---
+#### First we source our file with functions used for computation
+```{r}
+source('~/GitHub/assignment-2-Margareth2407/Source functions.R')
+```
+
+####Then we generate data set 
+```{r}
+trueA <- 5 #set a,b,sd and sample size for generating data
+trueB <- 0
+trueSd <- 10
+sampleSize <- 31
+
+# create independent x-values 
+x <- (-(sampleSize-1)/2):((sampleSize-1)/2)
+# create dependent values according to ax + b + N(0,sd)
+y <-  trueA * x + trueB + rnorm(n=sampleSize,mean=0,sd=trueSd)
+```
+
+####Then we write a fuction compare_oucomes that takes number of iteration, number of loops. Fuction initialize MCMC chain with randomly selected a,b,sd and run required number of iteration. Each loop return the mean and standart deviation for a (first column).
+```{r}
+set.seed(0)
+compare_outcomes <- function (iteration,loop){
+  for (i in 1:loop){
+    startvalue <- c(runif(1,0,10),rnorm(1,0,5),runif(1,0,30)) #generate random a,b,sd
+    chain = run_metropolis_MCMC(startvalue, 10000) #compute chain for each random a,d,sd and run a Metropolis algorith
+    print (c(mean(chain[,1]),sd(chain[,1])))
+    }
+}
+```
+
+####At the end we test our function  for 1,000, 10,000, and 100,000 iterations. 
+```{r}
+compare_outcomes(1000,10)
+compare_outcomes(10000,10)
+compare_outcomes(100000,10)
+
+```
+
+####As we see, the more iterations we run, the less the standart deviation becomes. Mean is also getting more stable as number of iteration increases. 
+
